@@ -9,13 +9,19 @@ class PetEpilepsyTracker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        unselectedWidgetColor: Colors.white,
+      ),
       home: Scaffold(
         appBar: AppBar(title: const Text('Pet Epilepsy Tracker',
         style: TextStyle(
         fontSize: 28.0, 
         fontWeight: FontWeight.bold,) 
         )),
-        body: PetEpilepsyLayout(),
+        body: Theme(
+          data: ThemeData.dark(),
+          child: PetEpilepsyLayout(),
+        ),
       ),
     );
   }
@@ -72,6 +78,8 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
+      child: Padding( // Wrap Column in Padding widget
+        padding: const EdgeInsets.all(20), // Apply padding to all sides
         child: Column(
           children: [
             ListTile(
@@ -81,17 +89,24 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                 color: Colors.white, // Apply style here
               ),
             ),
-            trailing: Icon(Icons.calendar_today),
+            trailing: const Icon(Icons.calendar_today, color: Colors.white),
               onTap: () => _selectDate(context),
             ),
             const SizedBox(height: 50),
             ListTile(
-              title: Text("Time: ${selectedTime.format(context)}"),
-              trailing: const Icon(Icons.access_time),
+              title: Text("Time: ${selectedTime.format(context)}",
+                style: const TextStyle(
+                  color: Colors.white, // Apply style here
+                ),
+              ),
+              trailing: const Icon(Icons.access_time, 
+                color: Colors.white),
               onTap: () => _selectTime(context),
             ),
             const SizedBox(height: 50),
-            TextFormField(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 300, 0),
+              child: TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Number of Seizures',
                 labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -99,13 +114,37 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
               keyboardType: TextInputType.number,
             ),
+            ),
+            const SizedBox(height: 50),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 300, 0),
+              child: TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Seizure Duration',
+                hintText: 'mm:ss', 
+                labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                hintStyle: TextStyle(color: Colors.white60),
+              ),
+              keyboardType: TextInputType.number, 
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}:\d{0,2}$')), // Allow input matching 00:00 format
+              ],
+              validator: (value) {
+                if (value == null || !RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
+                  return 'Enter time in mm:ss format';
+                }
+                return null; // Return null if the input format is correct
+              },
+              ),
+            ),
             const SizedBox(height: 50),
             const ListTile(
               title: Text("Seizure Type(s)"),
-              titleTextStyle: TextStyle(fontWeight:FontWeight.bold),
+              titleTextStyle: TextStyle(fontWeight:FontWeight.bold, color: Colors.white, fontSize: 18),
              ),
             CheckboxListTile(
-              title: const Text("Generalized (Grand Mal)"),
+              title: const Text("Generalized (Grand Mal)", style:TextStyle(color: Colors.white),),
+              tileColor: Colors.white,
               value: generalizedChecked,
               onChanged: (bool? value) {
                 setState(() {
@@ -114,7 +153,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               },
             ),
             CheckboxListTile(
-              title: const Text("Focal or Partial"),
+              title: const Text("Focal or Partial", style:TextStyle(color: Colors.white),),
               value: focalChecked,
               onChanged: (bool? value) {
                 setState(() {
@@ -123,7 +162,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               },
             ),
             CheckboxListTile(
-              title: const Text("Psychomotor"),
+              title: const Text("Psychomotor", style:TextStyle(color: Colors.white),),
               value: psychomotorChecked,
               onChanged: (bool? value) {
                 setState(() {
@@ -132,7 +171,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               },
             ),
             CheckboxListTile(
-              title: const Text("Idiopathic"),
+              title: const Text("Idiopathic", style:TextStyle(color: Colors.white),),
               value: idiopathicChecked,
               onChanged: (bool? value) {
                 setState(() {
@@ -143,10 +182,10 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
             const SizedBox(height: 50),
             const ListTile(
               title: Text('Rescue medication administered?'),
-              titleTextStyle: TextStyle(fontWeight:FontWeight.bold),
+              titleTextStyle: TextStyle(fontWeight:FontWeight.bold, color: Colors.white, fontSize: 18),
              ),
             ListTile(
-              title: const Text('Yes'),
+              title: const Text('Yes', style:TextStyle(color: Colors.white)),
               leading: Radio<String>(
                 value: 'Yes',
                 groupValue: rescueMedication,
@@ -158,7 +197,8 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
             ),
             ListTile(
-              title: const Text('No'),
+              title: const Text('No', style:TextStyle(color: Colors.white)),
+              tileColor: Colors.white,
               leading: Radio<String>(
                 value: 'No',
                 groupValue: rescueMedication,
@@ -172,10 +212,10 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
             const SizedBox(height: 50),
             const ListTile(
               title: Text('Regular medication administered on time?'),
-              titleTextStyle: TextStyle(fontWeight:FontWeight.bold),
+              titleTextStyle: TextStyle(fontWeight:FontWeight.bold, color: Colors.white, fontSize: 18,),
              ),
             ListTile(
-              title: const Text('Yes'),
+              title: const Text('Yes', style:TextStyle(color: Colors.white)),
               leading: Radio<String>(
                 value: 'Yes',
                 groupValue: regularMedication,
@@ -187,7 +227,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
             ),
             ListTile(
-              title: const Text('No'),
+              title: const Text('No', style:TextStyle(color: Colors.white)),
               leading: Radio<String>(
                 value: 'No',
                 groupValue: regularMedication,
@@ -199,7 +239,9 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
             ),
             const SizedBox(height: 50),
-            TextFormField(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Symptoms Before Seizure',
                 labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -208,10 +250,12 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              // No validator means no validation checks - the field is optional
+               ), 
             ),
             const SizedBox(height: 50),
-            TextFormField(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Symptoms After Seizure',
                 labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -220,10 +264,12 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              // No validator means no validation checks - the field is optional
+              ),// No validator means no validation checks - the field is optional
             ),
             const SizedBox(height: 50),
-            TextFormField(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 300, 0),
+              child: TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Post Ictal Duration',
                 hintText: 'hh:mm', 
@@ -240,6 +286,35 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                 }
                 return null; // Return null if the input format is correct
               },
+              ),
+            ),
+            const SizedBox(height: 50),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Suspected Triggers',
+                labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                hintStyle: TextStyle(color: Colors.white60),
+                hintText: 'Triggers and Auras',
+              ),
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              ),// No validator means no validation checks - the field is optional
+            ),
+            const SizedBox(height: 50),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Additional Notes',
+                labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                hintStyle: TextStyle(color: Colors.white60),
+                hintText: 'Anything else of note',
+              ),
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              ),// No validator means no validation checks - the field is optional
             ),
             const SizedBox(height: 50),
             ElevatedButton(
@@ -254,7 +329,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -279,17 +354,30 @@ class _PetEpilepsyLayoutState extends State<PetEpilepsyLayout> {
             color: const Color(0xFFFFFFFF), 
             child: const Column(
               children: [
+                SizedBox(height: 50),
                 Text(
                   'Profile',
-                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 16), 
+                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
                 ),
+                SizedBox(height: 50),
                 Text(
-                  'Data',
-                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 16), 
+                  'My Pet',
+                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
                 ),
+                SizedBox(height: 50),
+                Text(
+                  'Entries',
+                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
+                ),
+                SizedBox(height: 50),
+                Text(
+                  'Useful Tips',
+                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
+                ),
+                SizedBox(height: 50),
                 Text(
                   'Dedication',
-                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 16), 
+                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
                 ),
               ],
             ),
@@ -306,6 +394,8 @@ class _PetEpilepsyLayoutState extends State<PetEpilepsyLayout> {
                   bodyMedium: TextStyle(color: Colors.white),
                   bodySmall: TextStyle(color: Colors.white),
                 ),
+                unselectedWidgetColor: Colors.white,
+                brightness: Brightness.dark
               ),
             child: EpilepsyTrackerForm(), 
           ),
