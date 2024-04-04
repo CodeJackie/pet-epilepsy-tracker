@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'models/seizure_entry.dart';
+import 'database/database_helper.dart';
 
 void main() {
   runApp(PetEpilepsyTracker());
@@ -36,26 +39,33 @@ class EpilepsyTrackerForm extends StatefulWidget {
 
 class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  DateTime selectedDate = DateTime.now();
-  TimeOfDay selectedTime = TimeOfDay.now();
+  DateTime seizureDate = DateTime.now();
+  TimeOfDay seizureTime = TimeOfDay.now();
+  String? seizureCount = '';
+  String? seizureDuration = '';
   bool generalizedChecked = false;
   bool focalChecked = false;
   bool psychomotorChecked = false;
   bool idiopathicChecked = false;
-  String? rescueMedication = 'No'; 
-  String? regularMedication = 'Yes'; 
+  String? rescueMed = 'No'; 
+  String? regularMed = 'Yes'; 
+  String? preSymptoms = '';
+  String? postSymptoms = '';
+  String? postIctalDuration = '';
+  String? triggers = '';
+  String? notes = '';
 
   // Function to handle date selection
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: seizureDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2025),
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null && picked != seizureDate) {
       setState(() {
-        selectedDate = picked;
+        seizureDate = picked;
       });
     }
   }
@@ -64,13 +74,31 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
   _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: seizureTime,
     );
-    if (picked != null && picked != selectedTime) {
+    if (picked != null && picked != seizureTime) {
       setState(() {
-        selectedTime = picked;
+        seizureTime = picked;
       });
     }
+  }
+
+  // Function to convert Time to string
+  String formatTimeOfDay(TimeOfDay time) {
+    final now = DateTime.now();
+    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final format = DateFormat.jm();
+    return format.format(dt);
+  }
+
+  // Function to combine checkbox values into string
+  String getSeizureTypes() {
+    List<String> types = [];
+    if (generalizedChecked) types.add('Generalized');
+    if (focalChecked) types.add('Focal');
+    if (psychomotorChecked) types.add('Psychomotor');
+    if (idiopathicChecked) types.add('Idiopathic');
+    return types.join(", ");
   }
 
   @override
@@ -84,7 +112,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
           children: [
             ListTile(
             title: Text(
-              "Date: ${selectedDate.toLocal().toString().split(' ')[0]}",
+              "Date: ${seizureDate.toLocal().toString().split(' ')[0]}",
               style: const TextStyle(
                 color: Colors.white, // Apply style here
               ),
@@ -94,7 +122,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
             ),
             const SizedBox(height: 50),
             ListTile(
-              title: Text("Time: ${selectedTime.format(context)}",
+              title: Text("Time: ${seizureTime.format(context)}",
                 style: const TextStyle(
                   color: Colors.white, // Apply style here
                 ),
@@ -113,6 +141,15 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                 hintStyle: TextStyle(color: Colors.white60),
               ),
               keyboardType: TextInputType.number,
+              onSaved: (value) {
+                seizureCount = value;
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter number of seizures';
+                }
+                return null;
+              },
             ),
             ),
             const SizedBox(height: 50),
@@ -129,9 +166,12 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}:\d{0,2}$')), // Allow input matching 00:00 format
               ],
+              onSaved: (value) {
+                seizureDuration = value;
+              },
               validator: (value) {
                 if (value == null || !RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
-                  return 'Enter time in mm:ss format';
+                  return 'Enter duration in mm:ss format';
                 }
                 return null; // Return null if the input format is correct
               },
@@ -188,10 +228,10 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               title: const Text('Yes', style:TextStyle(color: Colors.white)),
               leading: Radio<String>(
                 value: 'Yes',
-                groupValue: rescueMedication,
+                groupValue: rescueMed,
                 onChanged: (String? value) {
                   setState(() {
-                    rescueMedication = value;
+                    rescueMed = value;
                   });
                 },
               ),
@@ -201,10 +241,10 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               tileColor: Colors.white,
               leading: Radio<String>(
                 value: 'No',
-                groupValue: rescueMedication,
+                groupValue: rescueMed,
                 onChanged: (String? value) {
                   setState(() {
-                    rescueMedication = value;
+                    rescueMed = value;
                   });
                 },
               ),
@@ -218,10 +258,10 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               title: const Text('Yes', style:TextStyle(color: Colors.white)),
               leading: Radio<String>(
                 value: 'Yes',
-                groupValue: regularMedication,
+                groupValue: regularMed,
                 onChanged: (String? value) {
                   setState(() {
-                    regularMedication = value;
+                    regularMed = value;
                   });
                 },
               ),
@@ -230,10 +270,10 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               title: const Text('No', style:TextStyle(color: Colors.white)),
               leading: Radio<String>(
                 value: 'No',
-                groupValue: regularMedication,
+                groupValue: regularMed,
                 onChanged: (String? value) {
                   setState(() {
-                    regularMedication = value;
+                    regularMed = value;
                   });
                 },
               ),
@@ -250,6 +290,9 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              onSaved: (value) {
+                preSymptoms = value;
+              }
                ), 
             ),
             const SizedBox(height: 50),
@@ -264,6 +307,9 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              onSaved: (value) {
+                postSymptoms = value;
+              },
               ),// No validator means no validation checks - the field is optional
             ),
             const SizedBox(height: 50),
@@ -280,6 +326,9 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}:\d{0,2}$')), // Allow input matching 00:00 format
               ],
+              onSaved: (value) {
+                postIctalDuration = value;
+              },
               validator: (value) {
                 if (value == null || !RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
                   return 'Enter time in hh:mm format';
@@ -300,6 +349,9 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              onSaved: (value) {
+                triggers = value;
+              },
               ),// No validator means no validation checks - the field is optional
             ),
             const SizedBox(height: 50),
@@ -314,13 +366,32 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              onSaved: (value) {
+                notes = value;
+              },
               ),// No validator means no validation checks - the field is optional
             ),
             const SizedBox(height: 50),
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  // Process form submission here
+                  _formKey.currentState!.save();
+
+                  SeizureEntry entry = SeizureEntry(
+                    seizureDate: seizureDate.toIso8601String(), 
+                    seizureTime: formatTimeOfDay(seizureTime), 
+                    seizureCount: seizureCount ?? '1', 
+                    seizureDuration: seizureDuration ?? '', 
+                    seizureTypes: getSeizureTypes(), 
+                    rescueMed: rescueMed ?? 'No', 
+                    regularMed: regularMed ?? 'Yes', 
+                    preSymptoms: preSymptoms ?? '', 
+                    postSymptoms: postSymptoms ?? '', 
+                    postIctalDuration: postIctalDuration ?? '', 
+                    triggers: triggers ?? '', 
+                    notes: notes ?? ''
+                    );
+                    DatabaseHelper.instance.insertEntry(entry);
                 }
               },
               child: const Text('Submit'),
