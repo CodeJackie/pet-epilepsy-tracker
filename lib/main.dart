@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'models/seizure_entry.dart';
 import 'database/database_helper.dart';
+import 'view_entries.dart';
 
 void main() {
   runApp(PetEpilepsyTracker());
@@ -133,7 +134,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
             ),
             const SizedBox(height: 50),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 300, 0),
+              padding: const EdgeInsets.fromLTRB(20, 0, 100, 0),
               child: TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Number of Seizures',
@@ -154,7 +155,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
             ),
             const SizedBox(height: 50),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 300, 0),
+              padding: const EdgeInsets.fromLTRB(20, 0, 100, 0),
               child: TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Seizure Duration',
@@ -163,18 +164,11 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                 hintStyle: TextStyle(color: Colors.white60),
               ),
               keyboardType: TextInputType.number, 
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}:\d{0,2}$')), // Allow input matching 00:00 format
-              ],
+              
               onSaved: (value) {
                 seizureDuration = value;
               },
-              validator: (value) {
-                if (value == null || !RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
-                  return 'Enter duration in mm:ss format';
-                }
-                return null; // Return null if the input format is correct
-              },
+              
               ),
             ),
             const SizedBox(height: 50),
@@ -314,7 +308,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
             ),
             const SizedBox(height: 50),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 300, 0),
+              padding: const EdgeInsets.fromLTRB(20, 0, 100, 0),
               child: TextFormField(
               decoration: const InputDecoration(
                 labelText: 'Post Ictal Duration',
@@ -323,17 +317,8 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                 hintStyle: TextStyle(color: Colors.white60),
               ),
               keyboardType: TextInputType.number, 
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}:\d{0,2}$')), // Allow input matching 00:00 format
-              ],
               onSaved: (value) {
                 postIctalDuration = value;
-              },
-              validator: (value) {
-                if (value == null || !RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
-                  return 'Enter time in hh:mm format';
-                }
-                return null; // Return null if the input format is correct
               },
               ),
             ),
@@ -393,6 +378,10 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                     );
                     DatabaseHelper.instance.insertEntry(entry);
                 }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ViewEntries()),
+                );
               },
               child: const Text('Submit'),
             ),

@@ -13,6 +13,7 @@ class DatabaseHelper {
     if (_database !=null) return _database!;
 
     _database = await _initDB('seizure_tracker.db');
+    print('Database Created Successfully');
     return _database!;
   }
 
@@ -23,7 +24,7 @@ class DatabaseHelper {
   }
 
   Future _createDB(Database db, int version) async {
-    const idType = 'INTERGER PRIMARY KEY AUTOINCREMENT';
+    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const textType = 'TEXT NOT NULL';
 
     await db.execute('''
@@ -48,17 +49,33 @@ class DatabaseHelper {
   //Create Data
   Future<void> insertEntry(SeizureEntry entry) async {
     final db = await database;
+
+    try {
+      await db.insert(
+        'seizure_entries',
+        entry.toMap(),
+        conflictAlgorithm:  ConflictAlgorithm.replace,
+      );
+      print('Data Entry Created: ${entry.toMap()}');
+    } catch (e) {
+      print('Error inserting entry: $e');
+    }
+
+    /*print('data Entry created');
     await db.insert(
       'seizure_entries',//Table name
        entry.toMap(), //insert data
        conflictAlgorithm: ConflictAlgorithm.replace,
-       );
+       );*/
   }
 
   //Read Data
   Future<List<SeizureEntry>> getEntries() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('seizure_entries');
+    
+    print('Fetched entries from DB: $maps');
+    
     return List.generate(maps.length, (i) {
       return SeizureEntry.fromMap(maps[i]);
     });
