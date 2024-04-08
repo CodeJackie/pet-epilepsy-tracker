@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'models/seizure_entry.dart';
 import 'database/database_helper.dart';
@@ -20,8 +19,62 @@ class PetEpilepsyTracker extends StatelessWidget {
         appBar: AppBar(title: const Text('Pet Epilepsy Tracker',
         style: TextStyle(
         fontSize: 28.0, 
-        fontWeight: FontWeight.bold,) 
-        )),
+        fontWeight: FontWeight.bold,
+        ) 
+        )
+        ),
+        drawer: Drawer(
+          child: Builder(
+            builder: (context) => ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: Text(
+                  'Menu',
+                  style: TextStyle(
+                    color: Color(0xFF593FA5),
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text('Profile', style: TextStyle(color: Color(0xFF593FA5))),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('My Pet', style: TextStyle(color: Color(0xFF593FA5))),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Entries', style: TextStyle(color: Color(0xFF593FA5))),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEntries()));
+                },
+              ),
+              ListTile(
+                title: Text('Useful Tips', style: TextStyle(color: Color(0xFF593FA5))),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Dedication', style: TextStyle(color: Color(0xFF593FA5))),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          )
+          )
+        ),
         body: Theme(
           data: ThemeData.dark(),
           child: PetEpilepsyLayout(),
@@ -48,8 +101,8 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
   bool focalChecked = false;
   bool psychomotorChecked = false;
   bool idiopathicChecked = false;
-  String? rescueMed = 'No'; 
-  String? regularMed = 'Yes'; 
+  String? rescueMed = ''; 
+  String? regularMed = ''; 
   String? preSymptoms = '';
   String? postSymptoms = '';
   String? postIctalDuration = '';
@@ -408,41 +461,6 @@ class _PetEpilepsyLayoutState extends State<PetEpilepsyLayout> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(
-          flex: 1,
-          child: Container(
-            color: const Color(0xFFFFFFFF), 
-            child: const Column(
-              children: [
-                SizedBox(height: 50),
-                Text(
-                  'Profile',
-                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
-                ),
-                SizedBox(height: 50),
-                Text(
-                  'My Pet',
-                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
-                ),
-                SizedBox(height: 50),
-                Text(
-                  'Entries',
-                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
-                ),
-                SizedBox(height: 50),
-                Text(
-                  'Useful Tips',
-                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
-                ),
-                SizedBox(height: 50),
-                Text(
-                  'Dedication',
-                  style: TextStyle(color: Color(0xFF593FA5), fontSize: 21), 
-                ),
-              ],
-            ),
-          ),
-        ),
         Expanded(
           flex: 3,
           child: Container(
