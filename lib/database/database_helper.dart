@@ -1,6 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../models/seizure_entry.dart';
+import '../models/pet_details.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -26,6 +27,7 @@ class DatabaseHelper {
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const textType = 'TEXT NOT NULL';
+    const intType = 'INTEGER NOT NULL';
 
     await db.execute('''
       CREATE TABLE seizure_entries (
@@ -43,6 +45,21 @@ class DatabaseHelper {
         triggers $textType,
         notes $textType
       )
+    ''');
+    
+    await db.execute('''
+    CREATE TABLE pet_details (
+      id $idType,
+      name $textType,
+      breed $textType,
+      birthdate $textType,
+      neuter $textType,
+      weight $intType,
+      lastSeizure $textType,
+      meds $textType,
+      medsFrequency $intType,
+      about $textType
+    )
     ''');
   }
 
@@ -100,5 +117,35 @@ class DatabaseHelper {
       where: 'id = ?', //find the entry by id
       whereArgs: [id]
     );
+  }
+
+  //Pet Details
+
+  //Create Data
+  Future<void> insertDetails(PetDetails entry) async {
+    final db = await database;
+
+    try {
+      await db.insert(
+        'pet_details',
+        entry.toMap(),
+        conflictAlgorithm:  ConflictAlgorithm.replace,
+      );
+      print('Data Entry Created: ${entry.toMap()}');
+    } catch (e) {
+      print('Error inserting entry: $e');
+    }
+  }
+
+  //Read Data
+  Future<List<PetDetails>> getDetails() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('pet_details');
+    
+    print('Fetched entries from DB: $maps');
+    
+    return List.generate(maps.length, (i) {
+      return PetDetails.fromMap(maps[i]);
+    });
   }
 }

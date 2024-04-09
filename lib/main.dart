@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'models/seizure_entry.dart';
 import 'database/database_helper.dart';
 import 'view_entries.dart';
+import 'my_pet.dart';
+import 'models/pet_details.dart';
 
 void main() {
   runApp(PetEpilepsyTracker());
@@ -50,6 +52,7 @@ class PetEpilepsyTracker extends StatelessWidget {
                 title: Text('My Pet', style: TextStyle(color: Color(0xFF593FA5))),
                 onTap: () {
                   Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => MyPet()));
                 },
               ),
               ListTile(
