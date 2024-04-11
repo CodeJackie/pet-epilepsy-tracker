@@ -14,6 +14,7 @@ class _MyPetState extends State<MyPet> {
 
  //A Conditional UI. Ooo!
   Widget _buildBirthdateOrAge() {
+    print('Building birthdate or age widget');
     if (_birthdate == null) {
       return TextButton(
         onPressed: _pickBirthdate,
@@ -77,6 +78,7 @@ class _MyPetState extends State<MyPet> {
             alignment: Alignment.center,
             child: Text('Pet Image Placeholder'),
           ),
+          _buildBirthdateOrAge(),
       Expanded( 
         child: FutureBuilder<List<PetDetails>>(
         future: entries,
@@ -95,8 +97,8 @@ class _MyPetState extends State<MyPet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget> [
-                        //Text('About ${entry.name}: ${entry.about}'),
-                        _buildBirthdateOrAge(),
+                        Text('About ${entry.name}: ${entry.about}'),
+                        
                       ]
                     )
                   ),

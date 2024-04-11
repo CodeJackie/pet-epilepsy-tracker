@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'models/seizure_entry.dart';
+import 'models/pet_details.dart';
 import 'database/database_helper.dart';
 import 'view_entries.dart';
 import 'my_pet.dart';
-import 'models/pet_details.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_){ 
   runApp(PetEpilepsyTracker());
+  });
 }
 
 class PetEpilepsyTracker extends StatelessWidget {

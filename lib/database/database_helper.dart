@@ -21,7 +21,7 @@ class DatabaseHelper {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 2, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -147,5 +147,26 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) {
       return PetDetails.fromMap(maps[i]);
     });
+  }
+
+ //Update Data
+  Future<void> updateDetails(PetDetails entry) async {
+    final db = await database;
+    await db.update(
+      'pet_details',
+      entry.toMap(), //insert data
+      where: 'id = ?', //find the entry by id
+      whereArgs: [entry.id], //use entry.id as argument
+    );
+  }
+
+  //Delete Data 
+  Future<void> deleteDetails(int id) async {
+    final db = await database;
+    await db.delete(
+      'pet_details',
+      where: 'id = ?', //find the entry by id
+      whereArgs: [id]
+    );
   }
 }
