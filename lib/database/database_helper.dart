@@ -21,7 +21,7 @@ class DatabaseHelper {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path, version: 2, onCreate: _createDB);
+    return await openDatabase(path, version: 3, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -169,4 +169,17 @@ class DatabaseHelper {
       whereArgs: [id]
     );
   }
+
+//Update Pet Name
+Future<void> updatePetName(String newName) async {
+  final db = await database;
+  // Assuming there's only one pet, but adjust accordingly
+  await db.update(
+    'pet_details',
+    {'name': newName},
+    where: 'id = ?', // Adjust if your table can have multiple pets
+    whereArgs: [1], // Example: updating the pet with id 1
+  );
+}
+
 }

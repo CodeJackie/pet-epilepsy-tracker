@@ -10,7 +10,7 @@ class MyPet extends StatefulWidget {
 
 class _MyPetState extends State<MyPet> {
   DateTime? _birthdate;
-  late Future<List<PetDetails>> entries;
+  Future<List<PetDetails>> entries = Future.value([]);
 
  //A Conditional UI. Ooo!
   Widget _buildBirthdateOrAge() {
@@ -43,6 +43,55 @@ class _MyPetState extends State<MyPet> {
     }
   }
 
+  String? _petName;
+
+  Widget _buildPetName() {
+  String displayText = _petName?.isNotEmpty == true ? _petName! : "Pet Name";
+  return GestureDetector(
+    onTap: () async {
+      // Show dialog to input new name
+      String? newName = await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Update Pet Name'),
+          content: TextField(
+            autofocus: true,
+            decoration: InputDecoration(hintText: 'Enter pet name'),
+            onChanged: (value) {
+              // Temporary store new name
+              _petName = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(_petName);
+              },
+              child: Text('Save'),
+            ),
+          ],
+        ),
+      );
+
+      if (newName != null && newName.isNotEmpty) {
+        // Update state and save to database
+        setState(() {
+          _petName = newName;
+        });
+        // Assume you have a method to update or insert the pet name into the PetDetails table
+        await DatabaseHelper.instance.updatePetName(newName); // This method needs to be implemented
+      }
+    },
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        displayText,
+        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
+
   @override
   void initState() {
     super.initState();
@@ -51,10 +100,14 @@ class _MyPetState extends State<MyPet> {
 
   void _loadPetDetails() async {
     try {
-      var details = await DatabaseHelper.instance.getDetails();
-      setState((){
-        entries = Future.value(details);
-      });
+      List<PetDetails> details = await DatabaseHelper.instance.getDetails();
+      if (details.isNotEmpty){
+        PetDetails entry = details.first;
+        setState(() {
+          _petName = entry.name;
+          _birthdate = DateTime.tryParse(entry.birthdate);
+        });
+      }
     } catch (e) {
       print('Error loading pet details: $e');
       setState((){
@@ -79,6 +132,7 @@ class _MyPetState extends State<MyPet> {
             child: Text('Pet Image Placeholder'),
           ),
           _buildBirthdateOrAge(),
+          _buildPetName(),
       Expanded( 
         child: FutureBuilder<List<PetDetails>>(
         future: entries,
