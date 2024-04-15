@@ -21,13 +21,13 @@ class DatabaseHelper {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path, version: 3, onCreate: _createDB);
+    return await openDatabase(path, version: 4, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
-    const textType = 'TEXT NOT NULL';
-    const intType = 'INTEGER NOT NULL';
+    const textType = 'TEXT';
+    const intType = 'INTEGER';
 
     await db.execute('''
       CREATE TABLE seizure_entries (
@@ -124,7 +124,7 @@ class DatabaseHelper {
   //Create Data
   Future<void> insertDetails(PetDetails entry) async {
     final db = await database;
-
+    print('New data entered into Pet Details Table');
     try {
       await db.insert(
         'pet_details',
@@ -173,13 +173,19 @@ class DatabaseHelper {
 //Update Pet Name
 Future<void> updatePetName(String newName) async {
   final db = await database;
-  // Assuming there's only one pet, but adjust accordingly
+  final List<Map<String, dynamic>> results = await db.query('pet_details');
+  if (results.isEmpty) {
+    await db.insert('pet_details', {'name': newName});
+    print('Inserted new row and pet name into Pet Details Table');
+  } else {
   await db.update(
     'pet_details',
     {'name': newName},
-    where: 'id = ?', // Adjust if your table can have multiple pets
-    whereArgs: [1], // Example: updating the pet with id 1
+    where: 'id = ?', 
+    whereArgs: [results.first['id']],
   );
+  print('Updated pet name in Pet Details Table');
 }
 
+}
 }

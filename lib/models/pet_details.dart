@@ -1,26 +1,26 @@
 class PetDetails {
   final int? id;
-  final String name;
-  final String breed;
-  final String birthdate;
-  final String neuter;
-  final int weight;
-  final String lastSeizure;
-  final String meds;
-  final String medsFrequency;
-  final String about;
+  final String? name;
+  final String? breed;
+  final String? birthdate;
+  final String? neuter;
+  final int? weight;
+  final String? lastSeizure;
+  final String? meds;
+  final String? medsFrequency;
+  final String? about;
 
   PetDetails({
     this.id,
-    required this.name,
-    required this.breed,
-    required this.birthdate,
-    required this.neuter,
-    required this.weight,
-    required this.lastSeizure,
-    required this.meds,
-    required this.medsFrequency,
-    required this.about,
+    this.name,
+    this.breed,
+    this.birthdate,
+    this.neuter,
+    this.weight,
+    this.lastSeizure,
+    this.meds,
+    this.medsFrequency,
+    this.about,
   });
 
   factory PetDetails.fromMap(Map<String, dynamic> map) {

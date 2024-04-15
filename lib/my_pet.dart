@@ -49,24 +49,19 @@ class _MyPetState extends State<MyPet> {
   String displayText = _petName?.isNotEmpty == true ? _petName! : "Pet Name";
   return GestureDetector(
     onTap: () async {
-      // Show dialog to input new name
-      String? newName = await showDialog(
+      TextEditingController controller = TextEditingController();
+      String? newName = await showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
           title: Text('Update Pet Name'),
           content: TextField(
+            controller: controller,
             autofocus: true,
             decoration: InputDecoration(hintText: 'Enter pet name'),
-            onChanged: (value) {
-              // Temporary store new name
-              _petName = value;
-            },
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(_petName);
-              },
+              onPressed: () => Navigator.of(context).pop(controller.text),
               child: Text('Save'),
             ),
           ],
@@ -78,8 +73,8 @@ class _MyPetState extends State<MyPet> {
         setState(() {
           _petName = newName;
         });
-        // Assume you have a method to update or insert the pet name into the PetDetails table
-        await DatabaseHelper.instance.updatePetName(newName); // This method needs to be implemented
+        print('Button pressed for $newName');
+        await DatabaseHelper.instance.updatePetName(newName); 
       }
     },
     child: Padding(
@@ -105,7 +100,7 @@ class _MyPetState extends State<MyPet> {
         PetDetails entry = details.first;
         setState(() {
           _petName = entry.name;
-          _birthdate = DateTime.tryParse(entry.birthdate);
+          _birthdate = entry.birthdate != null ? DateTime.tryParse(entry.birthdate!) : null;
         });
       }
     } catch (e) {
