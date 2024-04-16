@@ -44,6 +44,7 @@ class _MyPetState extends State<MyPet> {
   }
 
   String? _petName;
+  String? _breed;
 
   Widget _buildPetName() {
   String displayText = _petName?.isNotEmpty == true ? _petName! : "Pet Name";
@@ -87,6 +88,50 @@ class _MyPetState extends State<MyPet> {
   );
 }
 
+  Widget _buildBreed() {
+  String displayText = _breed?.isNotEmpty == true ? _breed! : "Pet Name";
+  return GestureDetector(
+    onTap: () async {
+      TextEditingController controller = TextEditingController();
+      String? newBreed = await showDialog<String>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Enter Breed'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(hintText: 'Enter pet breed'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(controller.text),
+              child: Text('Save'),
+            ),
+          ],
+        ),
+      );
+
+      if (newBreed != null && newBreed.isNotEmpty) {
+        // Update state and save to database
+        setState(() {
+          _breed = newBreed;
+        });
+        print('Button pressed for $newBreed');
+        await DatabaseHelper.instance.updatePetBreed(newBreed); 
+      }
+    },
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        displayText,
+        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
+
+
+
   @override
   void initState() {
     super.initState();
@@ -128,6 +173,7 @@ class _MyPetState extends State<MyPet> {
           ),
           _buildBirthdateOrAge(),
           _buildPetName(),
+          _buildBreed(),
       Expanded( 
         child: FutureBuilder<List<PetDetails>>(
         future: entries,
