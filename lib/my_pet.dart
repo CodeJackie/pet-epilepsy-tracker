@@ -45,6 +45,7 @@ class _MyPetState extends State<MyPet> {
 
   String? _petName;
   String? _breed;
+  String? _about;
 
   Widget _buildPetName() {
   String displayText = _petName?.isNotEmpty == true ? _petName! : "Pet Name";
@@ -82,14 +83,14 @@ class _MyPetState extends State<MyPet> {
       padding: const EdgeInsets.all(8.0),
       child: Text(
         displayText,
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
       ),
     ),
   );
 }
 
   Widget _buildBreed() {
-  String displayText = _breed?.isNotEmpty == true ? _breed! : "Pet Name";
+  String displayText = _breed?.isNotEmpty == true ? _breed! : "Breed";
   return GestureDetector(
     onTap: () async {
       TextEditingController controller = TextEditingController();
@@ -121,14 +122,67 @@ class _MyPetState extends State<MyPet> {
       }
     },
     child: Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(4.0),
       child: Text(
         displayText,
-        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 20),
       ),
     ),
   );
 }
+
+Widget _buildAbout() {
+  String displayText = _about?.isNotEmpty == true ? _about! : "About";
+  return GestureDetector(
+    onTap: () async {
+      String? newAbout = await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('About Your Pet'),
+            content: TextField(
+              autofocus: true,
+              decoration: const InputDecoration(hintText: 'About'),
+              controller: TextEditingController(text: _about),
+              maxLines: null, // No limit on lines
+              keyboardType: TextInputType.multiline,
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Save'),
+                onPressed: () {
+                  Navigator.of(context).pop(_about);
+                },
+              ),
+            ],
+          );
+        },
+      );
+
+      if (newAbout != null) {
+        setState(() {
+          _about = newAbout;
+        });
+        // Save to database
+        await DatabaseHelper.instance.updatePetAbout(newAbout);
+      }
+    },
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        displayText,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
+
 
 
 
@@ -145,6 +199,8 @@ class _MyPetState extends State<MyPet> {
         PetDetails entry = details.first;
         setState(() {
           _petName = entry.name;
+          _breed = entry.breed;
+          _about = entry.about;
           _birthdate = entry.birthdate != null ? DateTime.tryParse(entry.birthdate!) : null;
         });
       }
@@ -156,59 +212,43 @@ class _MyPetState extends State<MyPet> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Pet Epilepsy Tracker'),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Pet Epilepsy Tracker'),
+    ),
+    body: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0), // Adjust the overall padding as needed
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: MediaQuery.of(context).size.height * 0.25,
+              child: DecoratedBox(
+                decoration: BoxDecoration(color: Colors.grey[300]),
+                child: Center(child: Text('Pet Image Placeholder')),
+              ),
+            ),
+            SizedBox(height: 8), // Control the space between image placeholder and next item
+            _buildPetName(),
+            Transform.translate(
+              offset: Offset(3, -10), // Moves up by 10 pixels
+              child: _buildBreed(),
+            ),
+            Transform.translate(
+              offset: Offset(0, -10), // Moves up by 10 pixels
+              child: _buildBirthdateOrAge(),
+            ),   // Continue adding widgets here
+            Transform.translate(
+              offset: Offset(0, -10), // Moves up by 10 pixels
+              child: _buildAbout(),
+            ),   // Continue adding widgets here
+          ],
+        ),
       ),
-      body: Column(
-        children: <Widget> [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.25,
-            color: Colors.grey[300],
-            width: double.infinity,
-            alignment: Alignment.center,
-            child: Text('Pet Image Placeholder'),
-          ),
-          _buildBirthdateOrAge(),
-          _buildPetName(),
-          _buildBreed(),
-      Expanded( 
-        child: FutureBuilder<List<PetDetails>>(
-        future: entries,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
-            return ListView.builder(
-              itemCount: snapshot.data?.length ?? 0,
-              itemBuilder: (context, index) {
-                PetDetails entry = snapshot.data![index];
-                return Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget> [
-                        Text('About ${entry.name}: ${entry.about}'),
-                        
-                      ]
-                    )
-                  ),
-                );
-              }
-            );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        }
-      )
-      )
-        ]
-    )
-    );
+    ),
+  );
 }
 
 // Use the Intl library to calculate age in readable text

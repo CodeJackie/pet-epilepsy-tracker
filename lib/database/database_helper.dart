@@ -207,4 +207,24 @@ Future<void> updatePetBreed(String newBreed) async {
 }
 
 }
+
+//Update Pet Breed
+Future<void> updatePetAbout(String newAbout) async {
+  final db = await database;
+  final List<Map<String, dynamic>> results = await db.query('pet_details');
+  if (results.isEmpty) {
+    await db.insert('pet_details', {'about': newAbout});
+    print('Inserted new row and About into Pet Details Table');
+  } else {
+  await db.update(
+    'pet_details',
+    {'about': newAbout},
+    where: 'id = ?', 
+    whereArgs: [results.first['id']],
+  );
+  print('Updated about in Pet Details Table');
+}
+
+}
+
 }
