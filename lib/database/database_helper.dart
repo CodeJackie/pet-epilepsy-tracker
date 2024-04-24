@@ -208,7 +208,18 @@ Future<void> updatePetBreed(String newBreed) async {
 
 }
 
-//Update Pet Breed
+//Update Pet Birthdate
+Future<void> updatePetBirthdate(String newBirthdate) async {
+  final db = await database;
+  await db.update(
+    'pet_details', 
+    {'birthdate': newBirthdate},
+    where: 'id = ?',
+    whereArgs: [1],
+    );
+}
+
+//Update Pet About
 Future<void> updatePetAbout(String newAbout) async {
   final db = await database;
   final List<Map<String, dynamic>> results = await db.query('pet_details');

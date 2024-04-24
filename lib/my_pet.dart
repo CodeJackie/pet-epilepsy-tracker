@@ -14,8 +14,8 @@ class _MyPetState extends State<MyPet> {
 
  //A Conditional UI. Ooo!
   Widget _buildBirthdateOrAge() {
-    print('Building birthdate or age widget');
     if (_birthdate == null) {
+    print('Building birthdate or age widget');
       return TextButton(
         onPressed: _pickBirthdate,
         child: Text("Birthdate: "),
@@ -40,6 +40,7 @@ class _MyPetState extends State<MyPet> {
       setState((){
         _birthdate = picked;
       });
+      await DatabaseHelper.instance.updatePetBirthdate(picked.toIso8601String());
     }
   }
 
@@ -135,6 +136,7 @@ Widget _buildAbout() {
   String displayText = _about?.isNotEmpty == true ? _about! : "About";
   return GestureDetector(
     onTap: () async {
+      TextEditingController textController = TextEditingController(text: _about);
       String? newAbout = await showDialog<String>(
         context: context,
         builder: (BuildContext context) {
@@ -143,21 +145,21 @@ Widget _buildAbout() {
             content: TextField(
               autofocus: true,
               decoration: const InputDecoration(hintText: 'About'),
-              controller: TextEditingController(text: _about),
-              maxLines: null, // No limit on lines
+              controller: textController,
+              maxLines: null, 
               keyboardType: TextInputType.multiline,
             ),
             actions: <Widget>[
               TextButton(
                 child: const Text('Cancel'),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(null);
                 },
               ),
               TextButton(
                 child: const Text('Save'),
                 onPressed: () {
-                  Navigator.of(context).pop(_about);
+                  Navigator.of(context).pop(textController.text);
                 },
               ),
             ],
@@ -165,7 +167,7 @@ Widget _buildAbout() {
         },
       );
 
-      if (newAbout != null) {
+      if (newAbout != null && newAbout != _about) {
         setState(() {
           _about = newAbout;
         });

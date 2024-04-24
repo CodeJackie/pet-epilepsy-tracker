@@ -1,4 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- Camera permission -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!-- External storage permissions -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <!-- Android 11+ specific permissions for querying package visibility -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+        </intent>
+    </queries>
     <application
         android:label="pet_epilepsy_tracker"
         android:name="${applicationName}"
