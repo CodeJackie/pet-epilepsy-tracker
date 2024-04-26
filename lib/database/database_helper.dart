@@ -21,7 +21,7 @@ class DatabaseHelper {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path, version: 4, onCreate: _createDB);
+    return await openDatabase(path, version: 5, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -58,7 +58,8 @@ class DatabaseHelper {
       lastSeizure $textType,
       meds $textType,
       medsFrequency $intType,
-      about $textType
+      about $textType,
+      imagePath $textType
     )
     ''');
   }
@@ -236,6 +237,17 @@ Future<void> updatePetAbout(String newAbout) async {
   print('Updated about in Pet Details Table');
 }
 
+}
+//Update Image Path
+Future<bool> updatePetImagePath(String imagePath, int petId) async {
+  final db = await database;
+  int updateCount = await db.update(
+    'pet_details',
+    {'imagePath': imagePath},
+    where: 'id = ?',
+    whereArgs: [petId],
+  );
+  return updateCount > 0;
 }
 
 }

@@ -9,6 +9,7 @@ class PetDetails {
   final String? meds;
   final String? medsFrequency;
   final String? about;
+  final String? imagePath;
 
   PetDetails({
     this.id,
@@ -21,6 +22,7 @@ class PetDetails {
     this.meds,
     this.medsFrequency,
     this.about,
+    this.imagePath,
   });
 
   factory PetDetails.fromMap(Map<String, dynamic> map) {
@@ -35,6 +37,7 @@ class PetDetails {
       meds: map['meds'],
       medsFrequency: map['medsFrequency'],
       about: map['about'],
+      imagePath: map['imagePath'],
     );
   }
 
@@ -50,6 +53,7 @@ class PetDetails {
       'meds': meds,
       'medsFrequency': medsFrequency,
       'about': about,
+      'imagePath': imagePath,
     };
   }
 }

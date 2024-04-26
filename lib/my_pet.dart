@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 import 'models/pet_details.dart';
 import 'database/database_helper.dart';
+import 'dart:io';
 
 class MyPet extends StatefulWidget {
   @override
@@ -24,7 +26,10 @@ class _MyPetState extends State<MyPet> {
       String age = calculateAge(_birthdate!);
       return TextButton(
         onPressed: _pickBirthdate,
-        child: Text("Age: $age"),
+        child: Text(
+          "Age: $age", 
+          style: TextStyle(fontSize:16, color: Colors.white70)
+          ),
       );
     }
   } 
@@ -47,6 +52,41 @@ class _MyPetState extends State<MyPet> {
   String? _petName;
   String? _breed;
   String? _about;
+  String? _imagePath;
+
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image !=null) {
+      setState((){
+        _imagePath = image.path;
+      });
+      await DatabaseHelper.instance.updatePetImagePath(_imagePath!, 1);
+    }
+  }
+
+  Widget _buildPetImage() {
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Container(
+        height: 250,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          image: _imagePath != null
+            ? DecorationImage(
+              image: FileImage(File(_imagePath!)),
+              fit: BoxFit.cover,
+            )
+            :null,
+        ),
+        alignment: Alignment.center,
+        child: _imagePath == null
+          ? Text('Tap to add pet image', style: TextStyle(color: Colors.black))
+          : null,
+      ),
+    );
+  }
 
   Widget _buildPetName() {
   String displayText = _petName?.isNotEmpty == true ? _petName! : "Pet Name";
@@ -84,7 +124,11 @@ class _MyPetState extends State<MyPet> {
       padding: const EdgeInsets.all(8.0),
       child: Text(
         displayText,
-        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 32, 
+          fontWeight: FontWeight.bold, 
+          color: Colors.white
+        ),
       ),
     ),
   );
@@ -126,7 +170,7 @@ class _MyPetState extends State<MyPet> {
       padding: const EdgeInsets.all(4.0),
       child: Text(
         displayText,
-        style: TextStyle(fontSize: 20),
+        style: TextStyle(fontSize: 20, color: Colors.white70),
       ),
     ),
   );
@@ -179,7 +223,7 @@ Widget _buildAbout() {
       padding: const EdgeInsets.all(8.0),
       child: Text(
         displayText,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 16, color: Colors.white),
       ),
     ),
   );
@@ -203,6 +247,7 @@ Widget _buildAbout() {
           _petName = entry.name;
           _breed = entry.breed;
           _about = entry.about;
+          _imagePath = entry.imagePath;
           _birthdate = entry.birthdate != null ? DateTime.tryParse(entry.birthdate!) : null;
         });
       }
@@ -221,31 +266,27 @@ Widget build(BuildContext context) {
       title: Text('Pet Epilepsy Tracker'),
     ),
     body: SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(10.0), // Adjust the overall padding as needed
+      child: Container(
+        color: const Color(0xFF593FA5),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: MediaQuery.of(context).size.height * 0.25,
-              child: DecoratedBox(
-                decoration: BoxDecoration(color: Colors.grey[300]),
-                child: Center(child: Text('Pet Image Placeholder')),
-              ),
-            ),
-            SizedBox(height: 8), // Control the space between image placeholder and next item
+            _buildPetImage(),
+            SizedBox(height: 8),
             _buildPetName(),
             Transform.translate(
-              offset: Offset(3, -10), // Moves up by 10 pixels
+              offset: Offset(3, -10), 
               child: _buildBreed(),
             ),
             Transform.translate(
-              offset: Offset(0, -10), // Moves up by 10 pixels
+              offset: Offset(-2, -25),
               child: _buildBirthdateOrAge(),
-            ),   // Continue adding widgets here
+            ),
             Transform.translate(
-              offset: Offset(0, -10), // Moves up by 10 pixels
+              offset: Offset(0, -10), 
               child: _buildAbout(),
-            ),   // Continue adding widgets here
+            ),
           ],
         ),
       ),
