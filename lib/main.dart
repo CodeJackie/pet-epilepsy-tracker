@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'models/seizure_entry.dart';
-import 'models/pet_details.dart';
 import 'database/database_helper.dart';
 import 'view_entries.dart';
 import 'my_pet.dart';
@@ -226,7 +225,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                 labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                 hintStyle: TextStyle(color: Colors.white60),
               ),
-              keyboardType: TextInputType.number, 
+              
               
               onSaved: (value) {
                 seizureDuration = value;
@@ -379,7 +378,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                 labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                 hintStyle: TextStyle(color: Colors.white60),
               ),
-              keyboardType: TextInputType.number, 
+              
               onSaved: (value) {
                 postIctalDuration = value;
               },
