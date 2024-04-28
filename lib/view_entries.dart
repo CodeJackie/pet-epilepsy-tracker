@@ -20,7 +20,7 @@ class _ViewEntriesState extends State<ViewEntries> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pet Epilepsy Tracker'),
+        title: const Text('Entries'),
       ),
       body: FutureBuilder<List<SeizureEntry>>(
         future: entries,

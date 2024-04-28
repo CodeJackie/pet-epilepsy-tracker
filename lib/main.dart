@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'models/seizure_entry.dart';
 import 'database/database_helper.dart';
 import 'view_entries.dart';
+import 'entries_page.dart';
 import 'my_pet.dart';
 
 void main() {
@@ -65,7 +66,7 @@ class PetEpilepsyTracker extends StatelessWidget {
                 title: Text('Entries', style: TextStyle(color: Color(0xFF593FA5))),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEntries()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => EntriesPage()));
                 },
               ),
               ListTile(

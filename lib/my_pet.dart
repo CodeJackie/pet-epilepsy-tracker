@@ -61,7 +61,18 @@ class _MyPetState extends State<MyPet> {
       setState((){
         _imagePath = image.path;
       });
-      await DatabaseHelper.instance.updatePetImagePath(_imagePath!, 1);
+      try {
+         bool updateSuccess = await DatabaseHelper.instance.updatePetImagePath(_imagePath!, 1);
+        if (updateSuccess)  {
+          print('imagePath update successfully');
+        } else {
+          print('Failed to update imagePath');
+        }
+      } catch (e) {
+        print('Error updating image path: $e');
+      }
+    } else {
+      print('No image selected');
     }
   }
 
@@ -263,7 +274,7 @@ Widget _buildAbout() {
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      title: Text('Pet Epilepsy Tracker'),
+      title: Text('My Pet'),
     ),
     body: SingleChildScrollView(
       child: Container(
