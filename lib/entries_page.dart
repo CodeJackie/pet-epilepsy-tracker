@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:pet_epilepsy_tracker/entry_item.dart';
 import 'models/seizure_entry.dart';
 import 'database/database_helper.dart';
 
@@ -16,35 +16,16 @@ class _EntriesPageState extends State {
     entries = DatabaseHelper.instance.getEntries();
   }
 
-  Widget _buildEntryItem(SeizureEntry entry) {
-    String formattedDate = DateFormat('MMMM d, yyyy').format(DateTime.parse(entry.seizureDate));
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            formattedDate,
-            style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            '${entry.seizureCount} Seizure(s)',
-            style: TextStyle(color: Colors.black87),
-          )
-        ],
-      ),
-    );
-  }
-
   @override 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Seizure Entries'),
-        backgroundColor: Color(0xFF593FA5),
       ),
-      body: FutureBuilder<List<SeizureEntry>>(
+      body: Container(
+        color: Color(0xFF593FA5),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
+        child: FutureBuilder<List<SeizureEntry>>(
         future: entries,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done){
@@ -53,9 +34,10 @@ class _EntriesPageState extends State {
             } else if (snapshot.hasData) {
               return ListView.separated(
                 itemCount: snapshot.data!.length,
-                separatorBuilder: (context, index) => SizedBox(height:2),
+                separatorBuilder: (context, index) => SizedBox(height:1),
                 itemBuilder: (context, index){
-                  return _buildEntryItem(snapshot.data![index]);
+                  return EntryItem(entry:snapshot.data![index],
+                  );
                 },
               );
             } else {
@@ -66,6 +48,7 @@ class _EntriesPageState extends State {
           }
         },
       ),
+      )
     );
   }
 }

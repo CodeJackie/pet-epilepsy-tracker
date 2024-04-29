@@ -90,9 +90,9 @@ class DatabaseHelper {
   //Read Data
   Future<List<SeizureEntry>> getEntries() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('seizure_entries');
-    
-    print('Fetched entries from DB: $maps');
+    final List<Map<String, dynamic>> maps = await db.query('seizure_entries',
+    orderBy: 'seizureDate DESC');
+
     
     return List.generate(maps.length, (i) {
       return SeizureEntry.fromMap(maps[i]);
