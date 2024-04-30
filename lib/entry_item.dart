@@ -22,27 +22,33 @@ class _EntryItemState extends State<EntryItem> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(_isExpanded ? 0 : 0),
       ),
-      color: _isExpanded ? Color(0xFF7a65b7) : Colors.white,
+      color: _isExpanded ? Color(0xFF202030) : Colors.white,
         child: ExpansionTile(
           onExpansionChanged: (bool expanded) {
             //change card background color
             setState(() => _isExpanded = expanded);
           },
-          tilePadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          tilePadding: _isExpanded ? EdgeInsets.fromLTRB(35, 5, 10, 5) : EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           title: _isExpanded ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
                Text(
                   DateFormat('MMMM d, yyyy').format(DateTime.parse(widget.entry.seizureDate)),
                   style: TextStyle(color: Colors.white, fontWeight:FontWeight.bold, fontSize: 22),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.left,
                 ),
                 SizedBox(height: 5),
                 Text(
                   '${widget.entry.seizureCount} Seizure(s)',
                   style: TextStyle(color: Colors.white, fontSize: 16),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.left,
                 ),
+                SizedBox(height: 5),
+                Text(
+                  '${widget.entry.notes}',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  textAlign: TextAlign.justify,
+                )
             ],
           ) : Text(
             DateFormat('MMMM d, yyyy').format(DateTime.parse(widget.entry.seizureDate)),
@@ -56,7 +62,7 @@ class _EntryItemState extends State<EntryItem> {
             ),
           children: <Widget>[
             Container(
-              color: Color(0xFF7a65b7),
+              color: Color(0xFF202030),
               padding: EdgeInsets.all(10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

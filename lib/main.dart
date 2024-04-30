@@ -119,6 +119,27 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
   String? triggers = '';
   String? notes = '';
 
+//function to clear all data in form upon submission
+  void resetForm() {
+    setState(() {
+      seizureDate = DateTime.now();
+      seizureTime = TimeOfDay.now();
+      seizureCount = '';
+      seizureDuration = '';
+      generalizedChecked = false;
+      focalChecked = false;
+      psychomotorChecked = false;
+      idiopathicChecked = false;
+      rescueMed = '';
+      regularMed = '';
+      preSymptoms = '';
+      postSymptoms = '';
+      postIctalDuration = '';
+      triggers = '';
+      notes = '';
+    });
+  }
+
   // Function to handle date selection
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -440,6 +461,8 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                     notes: notes ?? ''
                     );
                     DatabaseHelper.instance.insertEntry(entry);
+                    resetForm();
+                    print('Passed the reset form');
                 }
                 Navigator.push(
                   context,
