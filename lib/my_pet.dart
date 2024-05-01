@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'models/pet_details.dart';
 import 'database/database_helper.dart';
 import 'dart:io';
+import 'widgets/app_drawer.dart';
 
 class MyPet extends StatefulWidget {
   @override
@@ -276,6 +277,7 @@ Widget build(BuildContext context) {
     appBar: AppBar(
       title: Text('My Pet'),
     ),
+    drawer: AppDrawer(),
     body: SingleChildScrollView(
       child: Container(
         color: const Color(0xFF593FA5),

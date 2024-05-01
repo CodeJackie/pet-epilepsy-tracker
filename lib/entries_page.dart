@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_epilepsy_tracker/entry_item.dart';
+import 'package:pet_epilepsy_tracker/widgets/app_drawer.dart';
 import 'models/seizure_entry.dart';
 import 'database/database_helper.dart';
 
@@ -22,6 +23,7 @@ class _EntriesPageState extends State {
       appBar: AppBar(
         title: Text('Seizure Entries'),
       ),
+      drawer: AppDrawer(),
       body: Container(
         color: Color(0xFF593FA5),
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),

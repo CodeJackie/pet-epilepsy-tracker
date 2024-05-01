@@ -3,9 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'models/seizure_entry.dart';
 import 'database/database_helper.dart';
+import 'widgets/app_drawer.dart';
 import 'view_entries.dart';
-import 'entries_page.dart';
-import 'my_pet.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,59 +31,7 @@ class PetEpilepsyTracker extends StatelessWidget {
         ) 
         )
         ),
-        drawer: Drawer(
-          child: Builder(
-            builder: (context) => ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: Text(
-                  'Menu',
-                  style: TextStyle(
-                    color: Color(0xFF593FA5),
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text('Profile', style: TextStyle(color: Color(0xFF593FA5))),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text('My Pet', style: TextStyle(color: Color(0xFF593FA5))),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MyPet()));
-                },
-              ),
-              ListTile(
-                title: Text('Entries', style: TextStyle(color: Color(0xFF593FA5))),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => EntriesPage()));
-                },
-              ),
-              ListTile(
-                title: Text('Useful Tips', style: TextStyle(color: Color(0xFF593FA5))),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text('Dedication', style: TextStyle(color: Color(0xFF593FA5))),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          )
-          )
-        ),
+        drawer: AppDrawer(),
         body: Theme(
           data: ThemeData.dark(),
           child: PetEpilepsyLayout(),

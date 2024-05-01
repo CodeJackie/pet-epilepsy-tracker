@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'models/seizure_entry.dart';
 import 'database/database_helper.dart';
+import 'widgets/app_drawer.dart';
 
 class ViewEntries extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ class _ViewEntriesState extends State<ViewEntries> {
       appBar: AppBar(
         title: const Text('Entries'),
       ),
+      drawer: AppDrawer(),
       body: FutureBuilder<List<SeizureEntry>>(
         future: entries,
         builder: (context, snapshot) {
