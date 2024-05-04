@@ -10,7 +10,6 @@ class SeizureEntry {
   final String preSymptoms;
   final String postSymptoms;
   final String postIctalDuration;
-  final String triggers;
   final String notes;
 
   SeizureEntry({
@@ -25,7 +24,6 @@ class SeizureEntry {
     required this.preSymptoms,
     required this.postSymptoms,
     required this.postIctalDuration,
-    required this.triggers,
     required this.notes,
   });
 
@@ -42,7 +40,6 @@ class SeizureEntry {
         preSymptoms: map['preSymptoms'],
         postSymptoms: map['postSymptoms'],
         postIctalDuration: map['postIctalDuration'],
-        triggers: map['triggers'],
         notes: map['notes'],
       );
     }
@@ -60,7 +57,6 @@ class SeizureEntry {
         'preSymptoms': preSymptoms,
         'postSymptoms': postSymptoms,
         'postIctalDuration': postIctalDuration,
-        'triggers': triggers,
         'notes': notes,
       };
     }

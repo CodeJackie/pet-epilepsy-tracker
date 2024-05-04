@@ -63,7 +63,6 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
   String? preSymptoms = '';
   String? postSymptoms = '';
   String? postIctalDuration = '';
-  String? triggers = '';
   String? notes = '';
 
 //function to clear all data in form upon submission
@@ -82,7 +81,6 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
       preSymptoms = '';
       postSymptoms = '';
       postIctalDuration = '';
-      triggers = '';
       notes = '';
     });
   }
@@ -358,23 +356,6 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: TextFormField(
               decoration: const InputDecoration(
-                labelText: 'Suspected Triggers',
-                labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                hintStyle: TextStyle(color: Colors.white60),
-                hintText: 'Triggers and Auras',
-              ),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              onSaved: (value) {
-                triggers = value;
-              },
-              ),// No validator means no validation checks - the field is optional
-            ),
-            const SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextFormField(
-              decoration: const InputDecoration(
                 labelText: 'Additional Notes',
                 labelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                 hintStyle: TextStyle(color: Colors.white60),
@@ -403,8 +384,7 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                     regularMed: regularMed ?? 'Yes', 
                     preSymptoms: preSymptoms ?? '', 
                     postSymptoms: postSymptoms ?? '', 
-                    postIctalDuration: postIctalDuration ?? '', 
-                    triggers: triggers ?? '', 
+                    postIctalDuration: postIctalDuration ?? '',
                     notes: notes ?? ''
                     );
                     DatabaseHelper.instance.insertEntry(entry);

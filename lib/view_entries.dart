@@ -51,7 +51,6 @@ class _ViewEntriesState extends State<ViewEntries> {
                         Text('Symptoms Before Seizure: ${entry.preSymptoms}'),
                         Text('Symptoms After Seizure: ${entry.postSymptoms}'),
                         Text('Post Ictal Duration: ${entry.postIctalDuration}'),
-                        Text('Suspected Triggers: ${entry.triggers}'),
                         Text('Additional Notes: ${entry.notes}'),
                       ]
                     )
