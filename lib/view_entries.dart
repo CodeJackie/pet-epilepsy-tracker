@@ -6,7 +6,7 @@ import 'widgets/app_drawer.dart';
 class ViewEntries extends StatefulWidget {
   @override
   _ViewEntriesState createState() => _ViewEntriesState();
-} 
+}  
 
 class _ViewEntriesState extends State<ViewEntries> {
   late Future<List<SeizureEntry>> entries;
