@@ -82,19 +82,19 @@ class DatabaseHelper {
   }
 
   //Create Data
-  Future<void> insertEntry(SeizureEntry entry) async {
+  Future<int> insertEntry(SeizureEntry entry) async {
     final db = await database;
-
     try {
-      await db.insert(
+      int id = await db.insert(
         'seizure_entries',
         entry.toMap(),
-        conflictAlgorithm:  ConflictAlgorithm.replace,
+        conflictAlgorithm: ConflictAlgorithm.replace,
       );
+      return id; 
     } catch (e) {
       print('Error inserting entry: $e');
+      throw Exception('Failed to insert entry');
     }
-
   }
 
   //Read Data
@@ -132,10 +132,25 @@ class DatabaseHelper {
 
   //---------TRIGGER---------
 
-  // Create Trigger
-  Future<void> addTrigger(Trigger trigger) async {
+  //Read Data
+  Future<List<Trigger>> getTriggers() async {
     final db = await database;
-    await db.insert('trigger', trigger.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    final List<Map<String, dynamic>> maps = await db.query('trigger');
+    return List.generate(maps.length, (i) {
+      return Trigger.fromMap(maps[i]);
+    });
+  }
+
+  //Read Triggers
+  Future<List<Trigger>> getTriggersForSeizure(int seizureId) async {
+    final db = await database;
+    var results = await db.rawQuery('''
+      SELECT t.* FROM trigger t
+      INNER JOIN seizure_trigger st ON t.triggerId = st.triggerId
+      WHERE st.seizureId = ?
+    ''', [seizureId]);
+
+    return results.map((map) => Trigger.fromMap(map)).toList();
   }
 
   // Update Trigger
@@ -171,18 +186,38 @@ class DatabaseHelper {
     await deleteTrigger(oldTriggerId);
   }
 
-
-  // Link a seizure and a trigger
-  Future<void> addSeizureTrigger(int seizureId, int triggerId) async {
+  // Add trigger only if it doesn't exist
+  Future<Trigger> checkTrigger(String triggerName) async {
     final db = await database;
-    await db.insert('seizure_trigger', {
-      'seizureId': seizureId,
-      'triggerId': triggerId
-    });
+    var existing = await db.query(
+      'trigger',
+      where: 'triggerName = ?',
+      whereArgs: [triggerName],
+    );
+
+    if (existing.isNotEmpty) {
+      return Trigger.fromMap(existing.first);
+    } else {
+      var id = await db.insert('trigger', {'triggerName': triggerName});
+      return Trigger(triggerId: id, triggerName: triggerName);
+    }
   }
 
+  // Link seizure and triggers
+  Future<void> addTrigger(int seizureId, List<Trigger> triggers) async {
+    final db = await database;
+    for (var trigger in triggers) {
+      var triggerInDb = await checkTrigger(trigger.triggerName);
+      await db.insert('seizure_trigger', {
+        'seizureId': seizureId,
+        'triggerId': triggerInDb.triggerId,
+      });
+    }
+  }
+
+
   // Remove a link between a seizure and a trigger
-  Future<void> removeSeizureTrigger(int seizureId, int triggerId) async {
+  Future<void> removeTrigger(int seizureId, int triggerId) async {
     final db = await database;
     await db.delete(
       'seizure_trigger',
@@ -190,6 +225,21 @@ class DatabaseHelper {
       whereArgs: [seizureId, triggerId]
     );
   }
+
+  //---------SEIZURE TRIGGER JUNCTION---------
+
+  // Link a seizure with multiple triggers
+  Future<void> addSeizureTriggers(int seizureId, List<Trigger> triggers) async {
+    final db = await database;
+    for (var trigger in triggers) {
+      var triggerInDb = await checkTrigger(trigger.triggerName);
+      await db.insert('seizure_trigger', {
+        'seizureId': seizureId,
+        'triggerId': triggerInDb.triggerId,
+      });
+    }
+  }
+
 
   //---------PET DETAILS---------
 
@@ -275,8 +325,7 @@ class DatabaseHelper {
       where: 'id = ?', 
       whereArgs: [results.first['id']],
     );
-    print('Updated pet name in Pet Details Table');
-  }
+   }
 
   }
 
@@ -297,7 +346,6 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> results = await db.query('pet_details');
     if (results.isEmpty) {
       await db.insert('pet_details', {'about': newAbout});
-      print('Inserted new row and About into Pet Details Table');
     } else {
     await db.update(
       'pet_details',
@@ -305,7 +353,6 @@ class DatabaseHelper {
       where: 'id = ?', 
       whereArgs: [results.first['id']],
     );
-    print('Updated about in Pet Details Table');
   }
 
   }

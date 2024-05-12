@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 import 'models/seizure_entry.dart';
+import 'models/trigger.dart';
 import 'database/database_helper.dart';
 import 'widgets/app_drawer.dart';
+import 'widgets/chips_input.dart';
 import 'view_entries.dart';
 
 void main() {
@@ -50,6 +53,9 @@ class EpilepsyTrackerForm extends StatefulWidget {
 
 class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final List<Trigger> _allTriggers = [];
+  final List<Trigger> _selectedTriggers = [];
+
   DateTime seizureDate = DateTime.now();
   TimeOfDay seizureTime = TimeOfDay.now();
   String? seizureCount = '';
@@ -65,7 +71,21 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
   String? postIctalDuration = '';
   String? notes = '';
 
-//function to clear all data in form upon submission
+  //load all Triggers
+  void loadInitialTriggers() async {
+    var triggers = await DatabaseHelper.instance.getTriggers();
+    setState(() {
+      _allTriggers.addAll(triggers);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadInitialTriggers();
+  }
+
+//clear all data in form upon submission
   void resetForm() {
     setState(() {
       seizureDate = DateTime.now();
@@ -352,6 +372,16 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
               ),
             ),
             const SizedBox(height: 50),
+            CustomChipsInput(
+              initialTriggers: _selectedTriggers,
+              onChanged: (triggers) {
+                setState(() {
+                  _selectedTriggers.clear();
+                  _selectedTriggers.addAll(triggers);
+                });
+              },
+            ),
+            const SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: TextFormField(
@@ -386,10 +416,11 @@ class _EpilepsyTrackerFormState extends State<EpilepsyTrackerForm> {
                     postSymptoms: postSymptoms ?? '', 
                     postIctalDuration: postIctalDuration ?? '',
                     notes: notes ?? ''
-                    );
-                    DatabaseHelper.instance.insertEntry(entry);
+                  );
+                  DatabaseHelper.instance.insertEntry(entry).then((seizureId) {
+                    DatabaseHelper.instance.addTrigger(seizureId, _selectedTriggers);
+                  });
                     resetForm();
-                    print('Passed the reset form');
                 }
                 Navigator.push(
                   context,
